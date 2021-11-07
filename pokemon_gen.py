@@ -6,7 +6,7 @@ import markovify
 
 HEALTH_MAX = 100
 HEALTH_MIN = 50
-ATTITUDE = 0.15  # From 0 to 1
+ATTITUDE = 0.2  # From 0 to 1
 TEXT_TO_SPEECH = False
 TOKEN = "OTA0ODg1MTkyODkwNjc5MzA2.YYCCAQ.uCQKjwsAyWNZq1xQQHsQZFbl9sM"
 
@@ -93,8 +93,7 @@ name_model = PokemonText(text)
 )
 async def scenario_response(ctx):
     if random.random() <= ATTITUDE:
-        await ctx.send(file=discord.File("media/attitudes/no.gif"))
-        await ctx.send("No, I don't think I will.", tts=TEXT_TO_SPEECH)
+        await ctx.send(file=discord.File(random.choice(glob.glob("media/attitudes/*"))))
     else:
         user_pokemon.max_hp = HEALTH_MIN + int(
             random.random() * (HEALTH_MAX - HEALTH_MIN)
@@ -242,7 +241,7 @@ async def potion_use(ctx):
         await ctx.send(response, tts=TEXT_TO_SPEECH)
 
         enemy_move = random.choice(enemy_pokemon.moveset)
-        if random.random() <= 1.2:
+        if random.random() <= 0.2:
             # Attack missed
             response = (
                 "Enemy fakemon, "
