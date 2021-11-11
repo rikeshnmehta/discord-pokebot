@@ -13,15 +13,6 @@ TOKEN = "OTA0ODg1MTkyODkwNjc5MzA2.YYCCAQ.uCQKjwsAyWNZq1xQQHsQZFbl9sM"
 bot = commands.Bot(command_prefix="!")
 
 
-def moveset_generator():
-    moveset = []
-    with open("media/text/moves.txt") as m:
-        moves = m.readlines()
-    for move in range(4):
-        moveset.append(moves[int(random.random() * 679)])
-    return moveset
-
-
 # Pokemon class with Name, health and moveset
 class Pokemon:
     def __init__(self, name=""):
@@ -37,7 +28,29 @@ user_pokemon = Pokemon()
 enemy_pokemon = Pokemon()
 
 
+def moveset_generator():
+    """
+    moveset_generator parses the moves.txt file from the directory
+    in order to create a list of 4 moves to assign to a pokemon.
+
+    :return: List containing 4 move strings.
+    """
+    moveset = []
+    with open("media/text/moves.txt") as m:
+        moves = m.readlines()
+    for move in range(4):
+        moveset.append(moves[int(random.random() * 679)])
+    return moveset
+
+
 def battle_end_dialogue(result):
+    """
+    battle_end_dialogue takes the result of the battle as a string as a win or
+    loss and generates a markov model from the corresponding txt file. This model
+    is then used to create a dialogue for the NPC to say. This is sent to discord.
+
+    :param point_1: String containing result of battle, win or loss
+    """
     if result == "win":
         user_pokemon.ready = False
         with open("media/text/enemy_lose_battle.txt") as r:
@@ -77,6 +90,7 @@ with open("media/text/before_battle.txt") as r:
 message_model = markovify.Text(before_battle_text)
 
 # Override markovify preprocessing to allow for single word generation
+# Used for pokemon name generation
 class PokemonText(markovify.Text):
     def word_split(self, sentence):
         return list(sentence)
@@ -85,9 +99,13 @@ class PokemonText(markovify.Text):
         return "".join(characters)
 
 
+# Initialize the fakemon name markov model
 name_model = PokemonText(text)
 
 
+# The generate command will generate a pokemon battle scenario and print an NPC with a
+# challenge dialogue using a markov model. This will also initialize the user and enemy
+# pokemon.
 @bot.command(
     name="generate", help="Responds with a pokemon game scenario with a fakemon."
 )
@@ -133,6 +151,11 @@ async def scenario_response(ctx):
         await ctx.send(response, tts=TEXT_TO_SPEECH)
 
 
+# The attack command will simulate a round of battle with a user and enemy pokemon
+# that have already been generated. There is a chance that the user pokemon will
+# perform a critical hit, in this case, the user will inflict much more damage.
+# If one of the pokemon loses all health points, the scenario will end and will
+# result in a battle end dialogue being sent.
 @bot.command(
     name="attack",
     help="After generating a scenario, this will execute one round of attacks.",
@@ -219,6 +242,10 @@ async def scenario_response(ctx):
         )
 
 
+# The potion command will simulate the use of a potion on the user pokemon to replenish
+# 20 health points. The pokemon health cannot go above the original health points assigned.
+# The user only has 3 potions. The enemy pokemon still gets a turn to attack but has a higher
+# chance of missing its move.
 @bot.command(
     name="potion",
     help="After generating a scenario, this will use one potion to heal your fakemon by 20 health points.",
@@ -284,4 +311,5 @@ async def potion_use(ctx):
         )
 
 
+# Run the discord bot using the provided token
 bot.run(TOKEN)
