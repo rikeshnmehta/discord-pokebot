@@ -24,10 +24,6 @@ class Pokemon:
         self.ready = False
 
 
-user_pokemon = Pokemon()
-enemy_pokemon = Pokemon()
-
-
 def moveset_generator():
     """
     moveset_generator parses the moves.txt file from the directory
@@ -80,6 +76,9 @@ def battle_end_dialogue(result):
             + '"\n\n Use generate to play again.'
         )
 
+
+user_pokemon = Pokemon()
+enemy_pokemon = Pokemon()
 
 # Parse Pokemon names and before battle txt into single string
 with open("media/text/pokemon_names.txt") as f:
