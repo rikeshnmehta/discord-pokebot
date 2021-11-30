@@ -39,13 +39,13 @@ def moveset_generator():
     return moveset
 
 
-def battle_end_dialogue(result):
+def battle_end_dialogue(result, move):
     """
     battle_end_dialogue takes the result of the battle as a string as a win or
     loss and generates a markov model from the corresponding txt file. This model
     is then used to create a dialogue for the NPC to say. This is sent to discord.
 
-    :param point_1: String containing result of battle, win or loss
+    :param result: String containing result of battle, win or loss
     """
     if result == "win":
         user_pokemon.ready = False
@@ -56,7 +56,7 @@ def battle_end_dialogue(result):
             "\nYour "
             + user_pokemon.name[:-1]
             + " used "
-            + random.choice(user_pokemon.moveset)[:-1]
+            + move[:-1]
             + ' and won the the battle!\n"'
             + post_battle_model.make_sentence()
             + '"\n\n Use generate to play again.'
@@ -70,7 +70,7 @@ def battle_end_dialogue(result):
             "\nEnemy "
             + enemy_pokemon.name[:-1]
             + " used "
-            + random.choice(enemy_pokemon.moveset)[:-1]
+            + move[:-1]
             + ' and won the battle!\n"'
             + post_battle_model.make_sentence()
             + '"\n\n Use generate to play again.'
@@ -218,9 +218,9 @@ async def scenario_response(ctx):
         enemy_pokemon.hp -= user_damage
 
         if user_pokemon.hp <= 0:
-            response = battle_end_dialogue(result="lose")
+            response = battle_end_dialogue(result="lose", move=enemy_move[:-1])
         elif enemy_pokemon.hp <= 0:
-            response = battle_end_dialogue(result="win")
+            response = battle_end_dialogue(result="win", move=user_move[:-1])
         else:
             response = (
                 "Your fakemon, "
