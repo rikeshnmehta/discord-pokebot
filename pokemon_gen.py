@@ -8,7 +8,7 @@ HEALTH_MAX = 100
 HEALTH_MIN = 50
 ATTITUDE = 0.2  # From 0 to 1
 TEXT_TO_SPEECH = False
-TOKEN = "OTA0ODg1MTkyODkwNjc5MzA2.YYCCAQ.uCQKjwsAyWNZq1xQQHsQZFbl9sM"
+TOKEN = os.getenv("DISCORD_TOKEN")
 
 bot = commands.Bot(command_prefix="!")
 
